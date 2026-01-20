@@ -443,6 +443,11 @@ export async function getDashboardSummary() {
       .filter(t => t.type === 'retrait')
       .reduce((sum, t) => sum + (Number(t.montant) || 0), 0)
 
+    // Find recurring investment
+    const recurringDeposit = compteTransactions.find(
+      t => t.type === 'depot' && t.frequence && t.frequence !== 'ponctuel'
+    )
+
     const netInvesti = investi - retraits
     patrimoineTotal += latestValeur
     totalInvesti += netInvesti
@@ -453,6 +458,10 @@ export async function getDashboardSummary() {
       totalInvesti: netInvesti,
       performance: netInvesti > 0 ? ((latestValeur - netInvesti) / netInvesti) * 100 : 0,
       plusValue: latestValeur - netInvesti,
+      versementRegulier: recurringDeposit ? {
+        montant: Number(recurringDeposit.montant) || 0,
+        frequence: recurringDeposit.frequence,
+      } : null,
     }
   })
 

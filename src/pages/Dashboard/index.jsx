@@ -7,6 +7,7 @@ import {
   PiggyBank,
   ArrowUpRight,
   RefreshCw,
+  Calendar,
 } from 'lucide-react'
 import {
   LineChart,
@@ -27,6 +28,13 @@ import { Button } from '@/components/ui/button'
 import { cn, formatCurrency, formatPercent } from '@/lib/utils'
 
 const COLORS = ['#2563eb', '#7c3aed', '#059669', '#d97706', '#dc2626', '#0891b2', '#4f46e5', '#be185d']
+
+const FREQUENCE_LABELS = {
+  mensuel: '/mois',
+  trimestriel: '/trim.',
+  annuel: '/an',
+  hebdomadaire: '/sem.',
+}
 
 export default function Dashboard() {
   const { dashboard, fetchDashboard, loading } = useInvestmentStore()
@@ -140,7 +148,70 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      {/* Charts */}
+      {/* Accounts List - Main Focus */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Mes comptes</CardTitle>
+          <CardDescription>Valeurs actuelles et versements reguliers</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {comptes.map((compte) => (
+              <div
+                key={compte.id}
+                className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-muted/50 transition-colors"
+              >
+                <div className="flex-1">
+                  <p className="font-semibold text-lg">{compte.nom}</p>
+                  <p className="text-sm text-muted-foreground">{compte.plateforme}</p>
+                </div>
+
+                <div className="flex items-center gap-6">
+                  {/* Versement regulier */}
+                  {compte.versementRegulier && (
+                    <div className="text-right">
+                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                        <Calendar className="h-3 w-3" />
+                        <span>Versement</span>
+                      </div>
+                      <p className="font-medium text-primary">
+                        {formatCurrency(compte.versementRegulier.montant)}
+                        <span className="text-xs text-muted-foreground">
+                          {FREQUENCE_LABELS[compte.versementRegulier.frequence] || ''}
+                        </span>
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Performance */}
+                  <div className="text-right min-w-[80px]">
+                    <p className="text-sm text-muted-foreground">Perf.</p>
+                    <p
+                      className={cn(
+                        'font-semibold',
+                        compte.performance >= 0 ? 'text-green-600' : 'text-red-600'
+                      )}
+                    >
+                      {formatPercent(compte.performance)}
+                    </p>
+                  </div>
+
+                  {/* Valeur actuelle */}
+                  <div className="text-right min-w-[120px]">
+                    <p className="text-sm text-muted-foreground">Valeur</p>
+                    <p className="font-bold text-lg">{formatCurrency(compte.valeurActuelle)}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+            {comptes.length === 0 && (
+              <p className="text-center text-muted-foreground py-8">Aucun compte</p>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Charts Section - Bottom */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Evolution Chart */}
         <Card className="col-span-1 lg:col-span-2">
@@ -149,7 +220,7 @@ export default function Dashboard() {
             <CardDescription>12 derniers mois</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px]">
+            <div className="h-[280px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={historique}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
@@ -197,7 +268,7 @@ export default function Dashboard() {
             <CardDescription>Par type de compte</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px]">
+            <div className="h-[250px]">
               {allocation.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -205,8 +276,8 @@ export default function Dashboard() {
                       data={allocation}
                       cx="50%"
                       cy="50%"
-                      innerRadius={60}
-                      outerRadius={100}
+                      innerRadius={50}
+                      outerRadius={85}
                       paddingAngle={2}
                       dataKey="value"
                       nameKey="name"
@@ -235,39 +306,35 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        {/* Accounts List */}
+        {/* Summary Stats */}
         <Card>
           <CardHeader>
-            <CardTitle>Mes comptes</CardTitle>
-            <CardDescription>Performance par compte</CardDescription>
+            <CardTitle>Resume</CardTitle>
+            <CardDescription>Statistiques globales</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {comptes.map((compte) => (
-                <div
-                  key={compte.id}
-                  className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
-                >
-                  <div>
-                    <p className="font-medium">{compte.nom}</p>
-                    <p className="text-sm text-muted-foreground">{compte.plateforme}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-semibold">{formatCurrency(compte.valeurActuelle)}</p>
-                    <p
-                      className={cn(
-                        'text-sm',
-                        compte.performance >= 0 ? 'text-green-600' : 'text-red-600'
-                      )}
-                    >
-                      {formatPercent(compte.performance)}
-                    </p>
-                  </div>
-                </div>
-              ))}
-              {comptes.length === 0 && (
-                <p className="text-center text-muted-foreground py-4">Aucun compte</p>
-              )}
+              <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
+                <span className="text-muted-foreground">Nombre de comptes</span>
+                <span className="font-semibold">{comptes.length}</span>
+              </div>
+              <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
+                <span className="text-muted-foreground">Total investi</span>
+                <span className="font-semibold">{formatCurrency(totalInvesti)}</span>
+              </div>
+              <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
+                <span className="text-muted-foreground">Plus-value totale</span>
+                <span className={cn(
+                  'font-semibold',
+                  plusValue >= 0 ? 'text-green-600' : 'text-red-600'
+                )}>
+                  {plusValue >= 0 ? '+' : ''}{formatCurrency(plusValue)}
+                </span>
+              </div>
+              <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
+                <span className="text-muted-foreground">Versements ce mois</span>
+                <span className="font-semibold">{formatCurrency(depositsThisMonth)}</span>
+              </div>
             </div>
           </CardContent>
         </Card>
