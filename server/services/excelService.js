@@ -14,30 +14,91 @@ export const ACCOUNT_TYPES = [
   { id: 'assurance-vie', label: 'Assurance vie' },
   { id: 'pea', label: 'PEA (Plan d\'Epargne en Actions)' },
   { id: 'cto', label: 'Compte titre ordinaire (CTO)' },
-  { id: 'livret', label: 'Livret A / LDDS / LEP' },
+  { id: 'livret-a', label: 'Livret A' },
+  { id: 'ldds', label: 'LDDS (Livret Developpement Durable)' },
+  { id: 'lep', label: 'LEP (Livret Epargne Populaire)' },
   { id: 'per', label: 'PER (Plan d\'Epargne Retraite)' },
   { id: 'scpi', label: 'SCPI' },
   { id: 'crypto', label: 'Crypto' },
   { id: 'autre', label: 'Autre' },
 ]
 
-// Plateformes disponibles
-export const PLATFORMS = [
-  { id: 'boursorama', label: 'Boursorama' },
-  { id: 'fortuneo', label: 'Fortuneo' },
-  { id: 'bourse-direct', label: 'Bourse Direct' },
-  { id: 'degiro', label: 'Degiro' },
-  { id: 'trade-republic', label: 'Trade Republic' },
-  { id: 'linxea', label: 'Linxea' },
-  { id: 'yomoni', label: 'Yomoni' },
-  { id: 'nalo', label: 'Nalo' },
-  { id: 'swisslife', label: 'Swisslife' },
-  { id: 'axa', label: 'AXA' },
-  { id: 'generali', label: 'Generali' },
-  { id: 'credit-agricole', label: 'Credit Agricole' },
-  { id: 'bnp-paribas', label: 'BNP Paribas' },
-  { id: 'societe-generale', label: 'Societe Generale' },
+// Categories de plateformes
+export const PLATFORM_CATEGORIES = [
+  { id: 'banques-en-ligne', label: 'Banques en ligne' },
+  { id: 'banques-traditionnelles', label: 'Banques traditionnelles' },
+  { id: 'courtiers', label: 'Courtiers' },
+  { id: 'assureurs', label: 'Assureurs' },
+  { id: 'crypto', label: 'Plateformes Crypto' },
+  { id: 'gestion-patrimoine', label: 'Gestion de patrimoine' },
   { id: 'autre', label: 'Autre' },
+]
+
+// Plateformes disponibles organisees par categorie
+export const PLATFORMS = [
+  // Banques en ligne
+  { id: 'boursorama', label: 'Boursorama', category: 'banques-en-ligne' },
+  { id: 'fortuneo', label: 'Fortuneo', category: 'banques-en-ligne' },
+  { id: 'hello-bank', label: 'Hello Bank', category: 'banques-en-ligne' },
+  { id: 'ing', label: 'ING', category: 'banques-en-ligne' },
+  { id: 'monabanq', label: 'Monabanq', category: 'banques-en-ligne' },
+  { id: 'n26', label: 'N26', category: 'banques-en-ligne' },
+  { id: 'revolut', label: 'Revolut', category: 'banques-en-ligne' },
+
+  // Banques traditionnelles
+  { id: 'credit-agricole', label: 'Credit Agricole', category: 'banques-traditionnelles' },
+  { id: 'bnp-paribas', label: 'BNP Paribas', category: 'banques-traditionnelles' },
+  { id: 'societe-generale', label: 'Societe Generale', category: 'banques-traditionnelles' },
+  { id: 'lcl', label: 'LCL', category: 'banques-traditionnelles' },
+  { id: 'caisse-epargne', label: 'Caisse d\'Epargne', category: 'banques-traditionnelles' },
+  { id: 'banque-populaire', label: 'Banque Populaire', category: 'banques-traditionnelles' },
+  { id: 'credit-mutuel', label: 'Credit Mutuel', category: 'banques-traditionnelles' },
+  { id: 'la-banque-postale', label: 'La Banque Postale', category: 'banques-traditionnelles' },
+  { id: 'hsbc', label: 'HSBC', category: 'banques-traditionnelles' },
+
+  // Courtiers
+  { id: 'bourse-direct', label: 'Bourse Direct', category: 'courtiers' },
+  { id: 'degiro', label: 'Degiro', category: 'courtiers' },
+  { id: 'trade-republic', label: 'Trade Republic', category: 'courtiers' },
+  { id: 'saxo', label: 'Saxo Banque', category: 'courtiers' },
+  { id: 'interactive-brokers', label: 'Interactive Brokers', category: 'courtiers' },
+  { id: 'etoro', label: 'eToro', category: 'courtiers' },
+  { id: 'trading212', label: 'Trading 212', category: 'courtiers' },
+  { id: 'scalable-capital', label: 'Scalable Capital', category: 'courtiers' },
+
+  // Assureurs
+  { id: 'swisslife', label: 'Swisslife', category: 'assureurs' },
+  { id: 'axa', label: 'AXA', category: 'assureurs' },
+  { id: 'generali', label: 'Generali', category: 'assureurs' },
+  { id: 'allianz', label: 'Allianz', category: 'assureurs' },
+  { id: 'cardif', label: 'Cardif (BNP)', category: 'assureurs' },
+  { id: 'spirica', label: 'Spirica', category: 'assureurs' },
+  { id: 'suravenir', label: 'Suravenir', category: 'assureurs' },
+
+  // Plateformes Crypto
+  { id: 'binance', label: 'Binance', category: 'crypto' },
+  { id: 'coinbase', label: 'Coinbase', category: 'crypto' },
+  { id: 'kraken', label: 'Kraken', category: 'crypto' },
+  { id: 'crypto-com', label: 'Crypto.com', category: 'crypto' },
+  { id: 'bitpanda', label: 'Bitpanda', category: 'crypto' },
+  { id: 'bitstamp', label: 'Bitstamp', category: 'crypto' },
+  { id: 'kucoin', label: 'KuCoin', category: 'crypto' },
+  { id: 'bybit', label: 'Bybit', category: 'crypto' },
+  { id: 'okx', label: 'OKX', category: 'crypto' },
+  { id: 'ledger', label: 'Ledger (Hardware Wallet)', category: 'crypto' },
+  { id: 'metamask', label: 'MetaMask', category: 'crypto' },
+  { id: 'zengo', label: 'Zengo', category: 'crypto' },
+
+  // Gestion de patrimoine
+  { id: 'linxea', label: 'Linxea', category: 'gestion-patrimoine' },
+  { id: 'yomoni', label: 'Yomoni', category: 'gestion-patrimoine' },
+  { id: 'nalo', label: 'Nalo', category: 'gestion-patrimoine' },
+  { id: 'goodvest', label: 'Goodvest', category: 'gestion-patrimoine' },
+  { id: 'ramify', label: 'Ramify', category: 'gestion-patrimoine' },
+  { id: 'mon-petit-placement', label: 'Mon Petit Placement', category: 'gestion-patrimoine' },
+
+  // Autre
+  { id: 'autre', label: 'Autre', category: 'autre' },
 ]
 
 // Ensure data directory exists

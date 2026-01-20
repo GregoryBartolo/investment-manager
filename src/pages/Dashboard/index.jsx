@@ -4,30 +4,31 @@ import {
   TrendingUp,
   TrendingDown,
   Wallet,
-  PiggyBank,
   ArrowUpRight,
   RefreshCw,
   Calendar,
+  ChevronRight,
+  Sparkles,
 } from 'lucide-react'
 import {
   LineChart,
   Line,
   XAxis,
   YAxis,
-  CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  AreaChart,
+  Area,
   PieChart,
   Pie,
   Cell,
-  Legend,
 } from 'recharts'
 import useInvestmentStore from '@/stores/investmentStore'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { cn, formatCurrency, formatPercent } from '@/lib/utils'
 
-const COLORS = ['#2563eb', '#7c3aed', '#059669', '#d97706', '#dc2626', '#0891b2', '#4f46e5', '#be185d']
+const COLORS = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#06b6d4', '#6366f1', '#ec4899']
 
 const FREQUENCE_LABELS = {
   mensuel: '/mois',
@@ -45,8 +46,11 @@ export default function Dashboard() {
 
   if (loading && !dashboard) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="flex items-center justify-center h-[60vh]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-10 w-10 border-2 border-primary border-t-transparent"></div>
+          <p className="text-muted-foreground text-sm">Chargement...</p>
+        </div>
       </div>
     )
   }
@@ -70,275 +74,247 @@ export default function Dashboard() {
     allocation,
   } = dashboard
 
+  // Calculate total recurring investments
+  const totalRecurring = comptes.reduce((sum, c) => sum + (c.versementRegulier?.montant || 0), 0)
+
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">Tableau de bord</h1>
-          <p className="text-muted-foreground">Vue d'ensemble de votre patrimoine</p>
-        </div>
-        <Link to="/mise-a-jour">
-          <Button>
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Mettre a jour
-          </Button>
-        </Link>
-      </div>
-
-      {/* KPI Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Patrimoine Total</CardTitle>
-            <Wallet className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(patrimoineTotal)}</div>
-            <p className="text-xs text-muted-foreground">
-              {comptes.length} compte{comptes.length > 1 ? 's' : ''}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Performance Globale</CardTitle>
-            {performanceGlobale >= 0 ? (
-              <TrendingUp className="h-4 w-4 text-green-500" />
-            ) : (
-              <TrendingDown className="h-4 w-4 text-red-500" />
-            )}
-          </CardHeader>
-          <CardContent>
-            <div
-              className={cn(
-                'text-2xl font-bold',
-                performanceGlobale >= 0 ? 'text-green-600' : 'text-red-600'
-              )}
-            >
-              {formatPercent(performanceGlobale)}
+    <div className="space-y-8 max-w-7xl mx-auto">
+      {/* Hero Section - Patrimoine Total */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8 text-white">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTM2IDM0djItSDI0di0yaDEyek0zNiAyNHYySDI0di0yaDEyeiIvPjwvZz48L2c+PC9zdmc+')] opacity-50"></div>
+        <div className="relative">
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+            <div>
+              <p className="text-slate-400 text-sm font-medium mb-1">Patrimoine total</p>
+              <h1 className="text-4xl lg:text-5xl font-bold tracking-tight">{formatCurrency(patrimoineTotal)}</h1>
+              <div className="flex items-center gap-4 mt-3">
+                <div className={cn(
+                  "flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium",
+                  performanceGlobale >= 0 ? "bg-emerald-500/20 text-emerald-400" : "bg-red-500/20 text-red-400"
+                )}>
+                  {performanceGlobale >= 0 ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
+                  {formatPercent(performanceGlobale)}
+                </div>
+                <span className="text-slate-400 text-sm">
+                  {plusValue >= 0 ? '+' : ''}{formatCurrency(plusValue)} depuis le debut
+                </span>
+              </div>
             </div>
-            <p className="text-xs text-muted-foreground">
-              {plusValue >= 0 ? '+' : ''}{formatCurrency(plusValue)} de plus-value
-            </p>
-          </CardContent>
-        </Card>
+            <Link to="/mise-a-jour">
+              <Button size="lg" className="bg-white text-slate-900 hover:bg-slate-100">
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Mettre a jour
+              </Button>
+            </Link>
+          </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Investi</CardTitle>
-            <PiggyBank className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(totalInvesti)}</div>
-            <p className="text-xs text-muted-foreground">Capital initial</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Ce mois-ci</CardTitle>
-            <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(depositsThisMonth)}</div>
-            <p className="text-xs text-muted-foreground">Versements</p>
-          </CardContent>
-        </Card>
+          {/* Mini Stats */}
+          <div className="grid grid-cols-3 gap-4 mt-8 pt-6 border-t border-white/10">
+            <div>
+              <p className="text-slate-400 text-xs uppercase tracking-wider">Investi</p>
+              <p className="text-xl font-semibold mt-1">{formatCurrency(totalInvesti)}</p>
+            </div>
+            <div>
+              <p className="text-slate-400 text-xs uppercase tracking-wider">Ce mois</p>
+              <p className="text-xl font-semibold mt-1">{formatCurrency(depositsThisMonth)}</p>
+            </div>
+            <div>
+              <p className="text-slate-400 text-xs uppercase tracking-wider">Versements auto</p>
+              <p className="text-xl font-semibold mt-1">{formatCurrency(totalRecurring)}<span className="text-sm text-slate-400">/mois</span></p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Accounts List - Main Focus */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Mes comptes</CardTitle>
-          <CardDescription>Valeurs actuelles et versements reguliers</CardDescription>
-        </CardHeader>
-        <CardContent>
+      {/* Main Content Grid */}
+      <div className="grid lg:grid-cols-5 gap-6">
+        {/* Accounts Section - 3 columns */}
+        <div className="lg:col-span-3 space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold">Mes comptes</h2>
+            <Link to="/comptes" className="text-sm text-primary hover:underline flex items-center gap-1">
+              Voir tout <ChevronRight className="h-4 w-4" />
+            </Link>
+          </div>
+
           <div className="space-y-3">
-            {comptes.map((compte) => (
+            {comptes.map((compte, index) => (
               <div
                 key={compte.id}
-                className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-muted/50 transition-colors"
+                className="group relative bg-white rounded-xl border p-4 hover:shadow-lg hover:border-slate-200 transition-all duration-200"
               >
-                <div className="flex-1">
-                  <p className="font-semibold text-lg">{compte.nom}</p>
-                  <p className="text-sm text-muted-foreground">{compte.plateforme}</p>
-                </div>
+                <div className="flex items-center gap-4">
+                  {/* Color indicator */}
+                  <div
+                    className="w-1 h-12 rounded-full"
+                    style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                  />
 
-                <div className="flex items-center gap-6">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-slate-900 truncate">{compte.nom}</p>
+                    <p className="text-sm text-slate-500">{compte.plateforme}</p>
+                  </div>
+
                   {/* Versement regulier */}
                   {compte.versementRegulier && (
-                    <div className="text-right">
-                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                        <Calendar className="h-3 w-3" />
-                        <span>Versement</span>
-                      </div>
-                      <p className="font-medium text-primary">
+                    <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-blue-50 rounded-lg">
+                      <Calendar className="h-3.5 w-3.5 text-blue-600" />
+                      <span className="text-sm font-medium text-blue-700">
                         {formatCurrency(compte.versementRegulier.montant)}
-                        <span className="text-xs text-muted-foreground">
-                          {FREQUENCE_LABELS[compte.versementRegulier.frequence] || ''}
+                        <span className="text-blue-500 font-normal">
+                          {FREQUENCE_LABELS[compte.versementRegulier.frequence]}
                         </span>
-                      </p>
+                      </span>
                     </div>
                   )}
 
                   {/* Performance */}
-                  <div className="text-right min-w-[80px]">
-                    <p className="text-sm text-muted-foreground">Perf.</p>
-                    <p
-                      className={cn(
-                        'font-semibold',
-                        compte.performance >= 0 ? 'text-green-600' : 'text-red-600'
-                      )}
-                    >
-                      {formatPercent(compte.performance)}
-                    </p>
+                  <div className={cn(
+                    "text-sm font-semibold px-2 py-1 rounded",
+                    compte.performance >= 0 ? "text-emerald-700 bg-emerald-50" : "text-red-700 bg-red-50"
+                  )}>
+                    {formatPercent(compte.performance)}
                   </div>
 
-                  {/* Valeur actuelle */}
-                  <div className="text-right min-w-[120px]">
-                    <p className="text-sm text-muted-foreground">Valeur</p>
-                    <p className="font-bold text-lg">{formatCurrency(compte.valeurActuelle)}</p>
+                  {/* Valeur */}
+                  <div className="text-right min-w-[100px]">
+                    <p className="font-semibold text-slate-900">{formatCurrency(compte.valeurActuelle)}</p>
                   </div>
                 </div>
               </div>
             ))}
+
             {comptes.length === 0 && (
-              <p className="text-center text-muted-foreground py-8">Aucun compte</p>
+              <div className="text-center py-12 bg-slate-50 rounded-xl border-2 border-dashed">
+                <Wallet className="h-10 w-10 text-slate-300 mx-auto mb-3" />
+                <p className="text-slate-500">Aucun compte pour l'instant</p>
+              </div>
             )}
+          </div>
+        </div>
+
+        {/* Right Sidebar - 2 columns */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Allocation */}
+          <Card className="border-0 shadow-sm">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base font-medium">Repartition</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {allocation.length > 0 ? (
+                <div className="flex items-center gap-4">
+                  <div className="w-28 h-28">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={allocation}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={30}
+                          outerRadius={50}
+                          paddingAngle={3}
+                          dataKey="value"
+                        >
+                          {allocation.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          ))}
+                        </Pie>
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    {allocation.slice(0, 4).map((item, index) => (
+                      <div key={item.name} className="flex items-center gap-2">
+                        <div
+                          className="w-2.5 h-2.5 rounded-full"
+                          style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                        />
+                        <span className="text-xs text-slate-600 truncate flex-1">{item.name}</span>
+                        <span className="text-xs font-medium">{item.percentage.toFixed(0)}%</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-slate-400 text-center py-4">Aucune donnee</p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Quick Stats */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-4 text-white">
+              <p className="text-blue-100 text-xs uppercase tracking-wider">Comptes</p>
+              <p className="text-2xl font-bold mt-1">{comptes.length}</p>
+            </div>
+            <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl p-4 text-white">
+              <p className="text-emerald-100 text-xs uppercase tracking-wider">Plus-value</p>
+              <p className="text-2xl font-bold mt-1">{plusValue >= 0 ? '+' : ''}{formatCurrency(plusValue)}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Evolution Chart - Full Width */}
+      <Card className="border-0 shadow-sm">
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base font-medium">Evolution du patrimoine</CardTitle>
+            <span className="text-xs text-slate-400">12 derniers mois</span>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[240px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={historique}>
+                <defs>
+                  <linearGradient id="colorValeur" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2}/>
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <XAxis
+                  dataKey="label"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#94a3b8', fontSize: 11 }}
+                  dy={10}
+                />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#94a3b8', fontSize: 11 }}
+                  tickFormatter={(value) =>
+                    new Intl.NumberFormat('fr-FR', {
+                      notation: 'compact',
+                      compactDisplay: 'short',
+                    }).format(value)
+                  }
+                  dx={-10}
+                />
+                <Tooltip
+                  formatter={(value) => [formatCurrency(value), 'Valeur']}
+                  contentStyle={{
+                    backgroundColor: '#1e293b',
+                    border: 'none',
+                    borderRadius: '8px',
+                    color: '#fff',
+                    fontSize: '12px',
+                  }}
+                  labelStyle={{ color: '#94a3b8' }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="valeur"
+                  stroke="#3b82f6"
+                  strokeWidth={2}
+                  fill="url(#colorValeur)"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         </CardContent>
       </Card>
-
-      {/* Charts Section - Bottom */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Evolution Chart */}
-        <Card className="col-span-1 lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Evolution du patrimoine</CardTitle>
-            <CardDescription>12 derniers mois</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[280px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={historique}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                  <XAxis
-                    dataKey="label"
-                    className="text-xs"
-                    tick={{ fill: 'hsl(var(--muted-foreground))' }}
-                  />
-                  <YAxis
-                    className="text-xs"
-                    tick={{ fill: 'hsl(var(--muted-foreground))' }}
-                    tickFormatter={(value) =>
-                      new Intl.NumberFormat('fr-FR', {
-                        notation: 'compact',
-                        compactDisplay: 'short',
-                      }).format(value)
-                    }
-                  />
-                  <Tooltip
-                    formatter={(value) => [formatCurrency(value), 'Valeur']}
-                    contentStyle={{
-                      backgroundColor: 'hsl(var(--card))',
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '8px',
-                    }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="valeur"
-                    stroke="hsl(var(--primary))"
-                    strokeWidth={2}
-                    dot={false}
-                    activeDot={{ r: 6 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Allocation Pie Chart */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Repartition</CardTitle>
-            <CardDescription>Par type de compte</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[250px]">
-              {allocation.length > 0 ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={allocation}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={50}
-                      outerRadius={85}
-                      paddingAngle={2}
-                      dataKey="value"
-                      nameKey="name"
-                    >
-                      {allocation.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip
-                      formatter={(value) => formatCurrency(value)}
-                      contentStyle={{
-                        backgroundColor: 'hsl(var(--card))',
-                        border: '1px solid hsl(var(--border))',
-                        borderRadius: '8px',
-                      }}
-                    />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="flex items-center justify-center h-full text-muted-foreground">
-                  Aucune donnee
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Summary Stats */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Resume</CardTitle>
-            <CardDescription>Statistiques globales</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
-                <span className="text-muted-foreground">Nombre de comptes</span>
-                <span className="font-semibold">{comptes.length}</span>
-              </div>
-              <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
-                <span className="text-muted-foreground">Total investi</span>
-                <span className="font-semibold">{formatCurrency(totalInvesti)}</span>
-              </div>
-              <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
-                <span className="text-muted-foreground">Plus-value totale</span>
-                <span className={cn(
-                  'font-semibold',
-                  plusValue >= 0 ? 'text-green-600' : 'text-red-600'
-                )}>
-                  {plusValue >= 0 ? '+' : ''}{formatCurrency(plusValue)}
-                </span>
-              </div>
-              <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
-                <span className="text-muted-foreground">Versements ce mois</span>
-                <span className="font-semibold">{formatCurrency(depositsThisMonth)}</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
     </div>
   )
 }

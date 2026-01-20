@@ -6,10 +6,12 @@ import {
   TrendingUp,
   Menu,
   X,
+  Plus,
 } from 'lucide-react'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import AddAccountDialog from '@/components/AddAccountDialog'
 
 const navigation = [
   { name: 'Tableau de bord', href: '/', icon: LayoutDashboard },
@@ -20,6 +22,7 @@ const navigation = [
 export default function AppLayout({ children }) {
   const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [showAddAccount, setShowAddAccount] = useState(false)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -63,6 +66,14 @@ export default function AppLayout({ children }) {
               </Link>
             )
           })}
+
+          <Button
+            onClick={() => setShowAddAccount(true)}
+            className="w-full mt-4"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Ajouter un compte
+          </Button>
         </nav>
 
         <div className="absolute bottom-4 left-4 right-4">
@@ -88,15 +99,24 @@ export default function AppLayout({ children }) {
           >
             <Menu className="h-6 w-6" />
           </Button>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-1">
             <TrendingUp className="h-6 w-6 text-primary" />
             <span className="font-bold">Investment Manager</span>
           </div>
+          <Button
+            size="icon"
+            onClick={() => setShowAddAccount(true)}
+          >
+            <Plus className="h-5 w-5" />
+          </Button>
         </header>
 
         {/* Page content */}
         <main className="p-4 lg:p-8">{children}</main>
       </div>
+
+      {/* Add Account Dialog */}
+      <AddAccountDialog open={showAddAccount} onOpenChange={setShowAddAccount} />
     </div>
   )
 }

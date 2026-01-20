@@ -5,8 +5,6 @@ import {
   Edit2,
   TrendingUp,
   TrendingDown,
-  MoreVertical,
-  X,
 } from 'lucide-react'
 import useInvestmentStore from '@/stores/investmentStore'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -28,36 +26,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { cn, formatCurrency, formatPercent, formatDate } from '@/lib/utils'
-
-const ACCOUNT_TYPES = [
-  { id: 'assurance-vie', label: 'Assurance vie' },
-  { id: 'pea', label: 'PEA' },
-  { id: 'cto', label: 'Compte titre (CTO)' },
-  { id: 'livret', label: 'Livret A / LDDS / LEP' },
-  { id: 'per', label: 'PER' },
-  { id: 'scpi', label: 'SCPI' },
-  { id: 'crypto', label: 'Crypto' },
-  { id: 'autre', label: 'Autre' },
-]
-
-const PLATFORMS = [
-  { id: 'boursorama', label: 'Boursorama' },
-  { id: 'fortuneo', label: 'Fortuneo' },
-  { id: 'bourse-direct', label: 'Bourse Direct' },
-  { id: 'degiro', label: 'Degiro' },
-  { id: 'trade-republic', label: 'Trade Republic' },
-  { id: 'linxea', label: 'Linxea' },
-  { id: 'yomoni', label: 'Yomoni' },
-  { id: 'nalo', label: 'Nalo' },
-  { id: 'swisslife', label: 'Swisslife' },
-  { id: 'axa', label: 'AXA' },
-  { id: 'generali', label: 'Generali' },
-  { id: 'credit-agricole', label: 'Credit Agricole' },
-  { id: 'bnp-paribas', label: 'BNP Paribas' },
-  { id: 'societe-generale', label: 'Societe Generale' },
-  { id: 'autre', label: 'Autre' },
-]
+import { cn, formatCurrency, formatPercent } from '@/lib/utils'
+import AddAccountDialog, { ACCOUNT_TYPES, PLATFORMS } from '@/components/AddAccountDialog'
 
 export default function Accounts() {
   const {
