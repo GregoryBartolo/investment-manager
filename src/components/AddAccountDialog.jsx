@@ -224,12 +224,21 @@ export default function AddAccountDialog({ open, onOpenChange }) {
               <SelectTrigger>
                 <SelectValue placeholder="Selectionnez une plateforme" />
               </SelectTrigger>
-              <SelectContent>
-                {PLATFORMS.map((platform) => (
-                  <SelectItem key={platform.id} value={platform.id}>
-                    {platform.label}
-                  </SelectItem>
-                ))}
+              <SelectContent className="max-h-[300px]">
+                {PLATFORM_CATEGORIES.map((category) => {
+                  const categoryPlatforms = PLATFORMS.filter(p => p.category === category.id)
+                  if (categoryPlatforms.length === 0) return null
+                  return (
+                    <SelectGroup key={category.id}>
+                      <SelectLabel>{category.label}</SelectLabel>
+                      {categoryPlatforms.map((platform) => (
+                        <SelectItem key={platform.id} value={platform.id}>
+                          {platform.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  )
+                })}
               </SelectContent>
             </Select>
           </div>

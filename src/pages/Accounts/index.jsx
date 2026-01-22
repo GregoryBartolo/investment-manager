@@ -22,12 +22,14 @@ import {
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
 import { cn, formatCurrency, formatPercent } from '@/lib/utils'
-import AddAccountDialog, { ACCOUNT_TYPES, PLATFORMS } from '@/components/AddAccountDialog'
+import AddAccountDialog, { ACCOUNT_TYPES, PLATFORMS, PLATFORM_CATEGORIES } from '@/components/AddAccountDialog'
 
 export default function Accounts() {
   const {
@@ -324,12 +326,21 @@ export default function Accounts() {
                 <SelectTrigger>
                   <SelectValue placeholder="Selectionnez une plateforme" />
                 </SelectTrigger>
-                <SelectContent>
-                  {PLATFORMS.map((platform) => (
-                    <SelectItem key={platform.id} value={platform.id}>
-                      {platform.label}
-                    </SelectItem>
-                  ))}
+                <SelectContent className="max-h-[300px]">
+                  {PLATFORM_CATEGORIES.map((category) => {
+                    const categoryPlatforms = PLATFORMS.filter(p => p.category === category.id)
+                    if (categoryPlatforms.length === 0) return null
+                    return (
+                      <SelectGroup key={category.id}>
+                        <SelectLabel>{category.label}</SelectLabel>
+                        {categoryPlatforms.map((platform) => (
+                          <SelectItem key={platform.id} value={platform.id}>
+                            {platform.label}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    )
+                  })}
                 </SelectContent>
               </Select>
             </div>
