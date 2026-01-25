@@ -7,6 +7,7 @@ Application web locale de gestion d'investissements personnels avec stockage 100
 - **Tableau de bord** : Vue d'ensemble du patrimoine, performance globale, graphiques
 - **Gestion des comptes** : PEA, Assurance vie, CTO, Livrets, PER, SCPI, Crypto
 - **Mise a jour mensuelle** : Interface rapide pour actualiser les valorisations
+- **Suivi des salaires** : Historique et evolution des revenus
 - **Export Excel** : Donnees accessibles dans `data/investments.xlsx`
 
 ## Installation
